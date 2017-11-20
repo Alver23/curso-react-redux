@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ToDo App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js"></script>
+</head>
+<body>
+    <h2>Todo App</h2>
+    <br>
+    <!-- evento para funcion -->
+    <input type="text" id="texto" onkeypress="agregarTarea(event)">
+    <ul id="listaDesordenada"></ul>
+    <script type="text/javascript">
+        // JUEGO DE REDUX
+
+        // I. Crear el STATE inicial
+        var state = {
+            lista: []
+        }
+
+        // II. Crear STORE
+        var store = Redux.createStore(reducer, state)
+
+        // III. Reducer
+        function  reducer(state, action) {
+            var nuevoEstado = Object.assign({}, state)
+            if (action.type === 'AGR') {
+                /*nuevoEstado.lista.push({
+                    id: action.id,
+                    name: action.tarea
+                })*/
+                nuevoEstado.lista = state.lista.concat(
+                    [
+                        {
+                            id: action.id,
+                            name: action.tarea
+                        }
+                    ]
+                )
+                return nuevoEstado
+            }
+            if (action.type === 'ELM') {
+                nuevoEstado.lista = state.lista.filter(function(elemento) {
+                    return parseInt(elemento.id) !== parseInt(action.id)
+                })
+                return nuevoEstado
+            }
+            return state
+        }
+
+        // IV. ACTION CREATOR
+
+        var actionAgregar = function(tarea, id) {
+            return {
+                type: 'AGR',
+                tarea,
+                id
+            }
+        }
+
+        var actionEliminar = function(id) {
+            return {
+                type: 'ELM',
+                id
+            }
+        }
+
+        var id = 1
+        var agregarTarea = function(evento) {
+            if (evento.keyCode === 13) {
+                store.dispatch(actionAgregar(evento.target.value, id))
+                evento.target.value = null
+                id++
+            }
+        }
+
+        var eliminarTarea = function(_id) {
+            store.dispatch(actionEliminar(_id))
+        }
+
+        var mostrarTareas = function() {
+            var ul = document.getElementById('listaDesordenada')
+            var elementos = store.getState().lista
+            var mostrarElementos = elementos.map(function(elemento) {
+                return "<li>"+ elemento.name + " <button id='"+ elemento.id +"' onclick='eliminarTarea("+elemento.id+")'>Eliminar</button></li>"
+            })
+            ul.innerHTML = mostrarElementos
+        }
+        // Mostrar los elementos cada que hay una modificacion en el state de la STORE
+        mostrarTareas()
+        store.subscribe(mostrarTareas)
+    </script>
+</body>
+</html>

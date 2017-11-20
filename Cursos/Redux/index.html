@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Redux</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js"></script>
+</head>
+<body>
+    <div>
+        Valor: <span id="numero"></span>
+        <br>
+        <button id="aum" onclick="aumentar()">Aumentar</button>
+        <button id="dis" onclick="disminuir()">Disminuir</button>
+    </div>
+    <script type="text/javascript">
+        //Redux game
+        var self = this
+        // I. STATE
+        var state = {
+            cantidad: 0
+        }
+
+        // II. STORE toma dos parametros (reducer, state)
+        var store = Redux.createStore(reducer, state)
+
+        // III. REDUCER es una uncion que regresa un nuevo estado
+        // y tambien decimos que toma dos parametros (state, action)
+        function reducer(state, action) {
+            var nuevoEstado = Object.assign({}, state)
+            if (action.type === 'AUM') {
+                //console.log(nuevoEstado.cantidad)
+                nuevoEstado.cantidad = state.cantidad + 1
+                console.log(nuevoEstado.cantidad)
+                console.log(self.state.cantidad)
+                return nuevoEstado
+            }
+            if (action.type === 'DIS') {
+                nuevoEstado.cantidad = state.cantidad - 1
+                return nuevoEstado
+            }
+            return state
+        }
+
+        // IV. ACTION es un objeto JS cn el requisito de tener
+        // unkey "type"
+        // Se acciona a través de un store.dispatch(action)
+        var actionIncrement = {
+            type: 'AUM'
+        }
+
+        var actionDecrement = {
+            type: 'DIS'
+        }
+
+        var aumentar = function () {
+            // V. DISPATCH ejecuta la llamada al STORE y pasa el tipo de acción
+            store.dispatch(actionIncrement)
+        }
+
+        var disminuir = function () {
+            store.dispatch(actionDecrement)
+        }
+
+
+        var numero = document.getElementById('numero')
+        // VI. Acceder al state a través del STORE
+
+        var mostrarNumero = function () {
+            numero.innerHTML = store.getState().cantidad
+        }
+
+        mostrarNumero()
+
+        // VII. Suscribir el metodo que tiene o muestra el state
+        // para que se ejecute nuevamente cuando el STORE lo indique
+
+        store.subscribe(mostrarNumero)
+    </script>
+</body>
+</html>
